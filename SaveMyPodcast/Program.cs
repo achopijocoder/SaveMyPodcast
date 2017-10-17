@@ -4,6 +4,7 @@ using System.Threading;
 using System.Net.WebSockets;
 using System.IO;
 using NAudio.Wave;
+using System.Configuration;
 
 namespace HttpListenerWebSocketEcho
 {
@@ -14,6 +15,12 @@ namespace HttpListenerWebSocketEcho
         static void Main(string[] args)
         {
             var server = new Server();
+            string path = ConfigurationManager.AppSettings["savingPath"];
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
             server.Start("http://localhost:11000/");
             log.Info("Servidor arrancó...");
             Console.WriteLine("Pulsa cualquier tecla para salir ...");
@@ -84,7 +91,8 @@ namespace HttpListenerWebSocketEcho
                 byte[] receiveBuffer = new byte[5000];
 
                 //Especifica nombre del fichero a guardar
-                string fileName = String.Format("{0}_{1}.wav",count.ToString(), DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+                string path = ConfigurationManager.AppSettings["savingPath"];
+                string fileName = String.Format("{0}{1}_{2}.wav",path, count.ToString(), DateTime.Now.ToString("yyyyMMdd_HHmmss"));
 
                 Program.log.Info("Generando archivo..."+fileName);
 
