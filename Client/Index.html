@@ -4,15 +4,17 @@
 <head>
     <meta charset="utf-8" />
     <title></title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
     <script src="SaveMyPodcast.js"></script>
 </head>
 <body>
+    <script type="text/javascript">
+        var a = SaveMyPodcast;
+    </script>
     <div>
-        <input id="StartPodcast" type="button" value="Start Podcast" onclick="startRecording();" />
+        <input id="StartPodcast" type="button" value="Start Podcast" onclick="a.startRecording();" />
     </div>
     <div>
-        <input id="EndPodcast" type="button" value="End Podcast" onclick="stopRecording();" />
+        <input id="EndPodcast" type="button" value="End Podcast" onclick="a.stopRecording();" />
     </div>
     
 </body>

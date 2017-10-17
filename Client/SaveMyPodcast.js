@@ -1,59 +1,59 @@
-﻿
+﻿(function (window) {
 
-//https://stackoverflow.com/questions/30520661/broadcasting-live-audio-through-webrtc-using-socket-io-in-node-js
+    'use strict';
 
-var localSocket;
-var mediaRecorder;
-var localStream;
-function startRecording() {
+    function define_SaveMyPodcast() {
 
-    navigator.mediaDevices.getUserMedia({audio: true})
-        .then(function (mediaStream) {
-            localStream = mediaStream;
-            mediaRecorder = new MediaRecorder(mediaStream);
+        var SaveMyPodcast = {};
 
-            mediaRecorder.onstart = function (e) {
-                openConnection();
-            };
+        var localSocket;
+        var mediaRecorder;
+        var localStream;
 
-            mediaRecorder.ondataavailable = function (e) {
-                //send data e.data
-                //this.chunks.push(e.data);
-                sendBinaryMessage( e.data);
-                console.log(e.data);
-            };
-            mediaRecorder.onstop = function (e) {
-                //var blob = new Blob(this.chunks, { 'type': 'audio/ogg; codecs=opus' });
-                //socket.emit('radio', blob);
-                //close websocket
-                closeConnection();
-            };
+        SaveMyPodcast.startRecording = function(){
 
-            // Start recording
-            mediaRecorder.start(250);
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function (mediaStream) {
+                    localStream = mediaStream;
+                    mediaRecorder = new MediaRecorder(mediaStream);
 
-        }).catch((err) => {
-            console.log(err);
-        });
+                    mediaRecorder.onstart = function (e) {
+                        localSocket = new WebSocket('ws://localhost:11000');
+                    };
 
-    //send local stream to server
-    //Stream.write(audioStream);
-}
+                    mediaRecorder.ondataavailable = function (e) {
+                        if (localSocket.readyState != WebSocket.OPEN) return;
+                        localSocket.send(e.data);
+                        //console.log(e.data);
+                    };
+                    mediaRecorder.onstop = function (e) {
+                        //close websocket
+                        localSocket.close();
+                    };
 
-function stopRecording() {
-    mediaRecorder.stop();
-    localStream.getAudioTracks()[0].stop();
-}
+                    // Start recording
+                    // each 250 milliseconds sends a packet of audio data
+                    mediaRecorder.start(250);
 
-function openConnection() {
-    localSocket = new WebSocket('ws://desktop-dua4ahc:11000');
-}
+                }).catch((err) => {
+                    console.log(err);
+                });
+        }
 
-function closeConnection() {
-    localSocket.close();
-}
+        SaveMyPodcast.stopRecording = function () {
+            if (mediaRecorder !=  undefined && mediaRecorder.state !== 'inactive')
+                mediaRecorder.stop();
+            if (localStream != undefined)
+                localStream.getAudioTracks()[0].stop();
+        } 
 
-function sendBinaryMessage(blob) {
-    if (localSocket.readyState != WebSocket.OPEN) return;
-    localSocket.send(blob);
-}    
+        return SaveMyPodcast;
+    }
+    //define globally if it doesn't already exist
+    if (typeof (SaveMyPodcast) === 'undefined') {
+        window.SaveMyPodcast = define_SaveMyPodcast();
+    }
+    else {
+        console.log("SaveMyPodcast already defined.");
+    }
+})(window);
