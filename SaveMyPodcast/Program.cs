@@ -89,7 +89,7 @@ namespace HttpListenerWebSocketEcho
             {
                 //Recibir datos
                 byte[] receiveBuffer = new byte[5000];
-
+                int totalBytes = 0;
                 //Especifica nombre del fichero a guardar
                 string path = ConfigurationManager.AppSettings["savingPath"];
                 string fileName = String.Format("{0}{1}_{2}.wav",path, count.ToString(), DateTime.Now.ToString("yyyyMMdd_HHmmss"));
@@ -99,8 +99,8 @@ namespace HttpListenerWebSocketEcho
                 //crea el fichero donde se irán escribiendo los bytes recibidos
                 var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write);
 
-                WaveFileWriter writer;
-                //writer = new WaveFileWriter("file.wav", new WaveFormat(48000, 16, 1));
+                //WaveFileWriter writer;
+                //writer = new WaveFileWriter("file.wav", WaveFormat.CreateIeeeFloatWaveFormat(48000,1));
 
                 // Mientras el websocket esté abierto, escucha los datos que van llegando
                 while (webSocket.State == WebSocketState.Open)
@@ -116,12 +116,14 @@ namespace HttpListenerWebSocketEcho
 
                         //se cierra el stream del fichero
                         fs.Close();
+                        //writer.Close();
                     }
                     else if (receiveResult.MessageType == WebSocketMessageType.Text)
                     {
                         await webSocket.CloseAsync(WebSocketCloseStatus.InvalidMessageType, "Cannot accept text frame", CancellationToken.None);
                         //se cierra el stream del fichero porque son text data y queremos binary data
                         fs.Close();
+                        //writer.Close();
                     }
                     else
                     {
