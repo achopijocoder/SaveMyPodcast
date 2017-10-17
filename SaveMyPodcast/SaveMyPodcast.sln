@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveMyPodcast", "SaveMyPodcast.csproj", "{EECFAA67-6B25-4F0E-B62A-F1F379FC4B8E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{DA2E042B-3EA2-428E-BF01-950A6224934A}"
+	ProjectSection(SolutionItems) = preProject
+		..\Client\Index.html = ..\Client\Index.html
+		..\Client\SaveMyPodcast.js = ..\Client\SaveMyPodcast.js
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EECFAA67-6B25-4F0E-B62A-F1F379FC4B8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EECFAA67-6B25-4F0E-B62A-F1F379FC4B8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EECFAA67-6B25-4F0E-B62A-F1F379FC4B8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EECFAA67-6B25-4F0E-B62A-F1F379FC4B8E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {38FCF38C-ECF8-43DE-93D8-C623D393ADD6}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,8 @@
+﻿
+Using an Asynchronous Server Socket
+
+https://docs.microsoft.com/en-us/dotnet/framework/network-programming/using-an-asynchronous-server-socket
+
+Using an Asynchronous Client Socket
+
+https://docs.microsoft.com/en-us/dotnet/framework/network-programming/using-an-asynchronous-client-socket
