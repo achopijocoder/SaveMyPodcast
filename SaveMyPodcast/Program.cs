@@ -6,7 +6,7 @@ using System.IO;
 using NAudio.Wave;
 using System.Configuration;
 
-namespace HttpListenerWebSocketEcho
+namespace SaveMyPodcast
 {
     public class Program
     {
@@ -31,7 +31,7 @@ namespace HttpListenerWebSocketEcho
     class Server
     {
         //contador de streamings recibidos
-        private int count = 0;
+        private int countStreamingsReceived = 0;
 
         /// <summary>
         /// Espera un WebSocket connection y entonces lo procesa `ProcessRequest`, en otro caso devuelve 400
@@ -70,9 +70,9 @@ namespace HttpListenerWebSocketEcho
             try
             {
                 webSocketContext = await listenerContext.AcceptWebSocketAsync(subProtocol: null);
-                Interlocked.Increment(ref count);
-                Console.WriteLine("Recibidos: {0}", count);
-                Program.log.Info("Conexiones recibidas: " + count.ToString());
+                Interlocked.Increment(ref countStreamingsReceived);
+                Console.WriteLine("Recibidos: {0}", countStreamingsReceived);
+                Program.log.Info("Conexiones recibidas: " + countStreamingsReceived.ToString());
             }
             catch (Exception e)
             {
@@ -84,23 +84,20 @@ namespace HttpListenerWebSocketEcho
             }
 
             WebSocket webSocket = webSocketContext.WebSocket;
-
+            FileStream fs = null;
             try
             {
                 //Recibir datos
                 byte[] receiveBuffer = new byte[5000];
-                int totalBytes = 0;
+
                 //Especifica nombre del fichero a guardar
                 string path = ConfigurationManager.AppSettings["savingPath"];
-                string fileName = String.Format("{0}{1}_{2}.wav",path, count.ToString(), DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+                string fileName = String.Format("{0}{1}_{2}.wav",path, countStreamingsReceived.ToString(), DateTime.Now.ToString("yyyyMMdd_HHmmss"));
 
                 Program.log.Info("Generando archivo..."+fileName);
 
                 //crea el fichero donde se irán escribiendo los bytes recibidos
-                var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write);
-
-                //WaveFileWriter writer;
-                //writer = new WaveFileWriter("file.wav", WaveFormat.CreateIeeeFloatWaveFormat(48000,1));
+                fs = new FileStream(fileName, FileMode.Create, FileAccess.Write);
 
                 // Mientras el websocket esté abierto, escucha los datos que van llegando
                 while (webSocket.State == WebSocketState.Open)
@@ -116,25 +113,24 @@ namespace HttpListenerWebSocketEcho
 
                         //se cierra el stream del fichero
                         fs.Close();
-                        //writer.Close();
                     }
                     else if (receiveResult.MessageType == WebSocketMessageType.Text)
                     {
                         await webSocket.CloseAsync(WebSocketCloseStatus.InvalidMessageType, "Cannot accept text frame", CancellationToken.None);
+                        Program.log.Info("Se cierra conexión por texto recibido..." + fileName);
                         //se cierra el stream del fichero porque son text data y queremos binary data
                         fs.Close();
-                        //writer.Close();
                     }
                     else
                     {
                         //escribimos a fichero los bytes recibidos
                         fs.Write(receiveBuffer, 0, receiveResult.Count);
-                        //writer.Write(receiveBuffer, 0, receiveResult.Count);
                     }
                 }
             }
             catch (Exception e)
             {
+                fs.Close();
                 Console.WriteLine("Exception: {0}", e);
                 Program.log.Fatal("Exception: " + e.Message);
             }
